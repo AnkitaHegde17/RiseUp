@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RiseUp - Emotional Support Web App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 10px;
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    h1 {
+      font-size: 2.2em;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    input, textarea, button {
+      width: 90%;
+      max-width: 500px;
+      margin: 10px auto;
+      padding: 12px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      display: block;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .message, .quote {
+      margin-top: 20px;
+      font-size: 1.1em;
+    }
+
+    textarea {
+      height: 100px;
+    }
+
+    .form-group {
+      margin: 20px 0;
+    }
+
+    .journal-entries {
+      margin-top: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .journal-entries h3 {
+      margin-top: 0;
+    }
+
+    .dark-theme {
+      background-color: #333;
+      color: white;
+    }
+
+    @media screen and (max-width: 600px) {
+      h1 {
+        font-size: 1.7em;
+      }
+
+      .container {
+        padding: 10px;
+      }
+
+      input, textarea, button {
+        width: 95%;
+        font-size: 1em;
+      }
+
+      .quote, .message {
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>RiseUp - Emotional Support Web App</h1>
+  </header>
+
+  <div class="container">
+    <div class="form-group">
+      <h2>How are you feeling today?</h2>
+      <input type="text" id="userFeeling" placeholder="Type your feelings..." />
+      <button onclick="showMessage()">Get Motivated</button>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div class="form-group">
+      <button onclick="toggleTheme()">Toggle Dark/Light Theme</button>
+    </div>
+
+    <div class="quote" id="quote">"Believe in yourself, and the world will believe in you."</div>
+
+    <div class="form-group">
+      <h2>Give Feedback</h2>
+      <input type="text" id="feedback" placeholder="Your feedback" />
+      <button onclick="submitFeedback()">Submit Feedback</button>
+    </div>
+
+    <div class="form-group">
+      <h2>Contact Us</h2>
+      <input type="text" id="name" placeholder="Your Name" />
+      <input type="email" id="email" placeholder="Your Email" />
+      <input type="text" id="contactMessage" placeholder="Your Message" />
+      <button onclick="submitContact()">Send</button>
+    </div>
+
+    <div class="form-group">
+      <h2>Daily Mood Journal</h2>
+      <textarea id="journalEntry" placeholder="Write about your day..."></textarea>
+      <button onclick="saveJournal()">Save Entry</button>
+      <div class="journal-entries" id="journalEntries">
+        <h3>Previous Entries:</h3>
+        <ul id="entriesList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentTheme = 'light';
+
+    function showMessage() {
+      const feeling = document.getElementById('userFeeling').value.toLowerCase();
+      const message = document.getElementById('message');
+
+      if (feeling.includes('happy') || feeling.includes('joy')) {
+        message.textContent = "You're doing amazing! Keep it up!";
+      } else if (feeling.includes('sad') || feeling.includes('down')) {
+        message.textContent = "It's okay to feel sad sometimes. You're not alone.";
+      } else if (feeling.includes('tired') || feeling.includes('lost')) {
+        message.textContent = "Take a breath. You've got strength inside you.";
+      } else {
+        message.textContent = "Your feelings are valid. Keep moving forward.";
+      }
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      if (currentTheme === 'light') {
+        body.classList.add('dark-theme');
+        currentTheme = 'dark';
+      } else {
+        body.classList.remove('dark-theme');
+        currentTheme = 'light';
+      }
+    }
+
+    function submitFeedback() {
+      const feedback = document.getElementById('feedback').value;
+      alert("Thanks for your feedback: " + feedback);
+    }
+
+    function submitContact() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const msg = document.getElementById('contactMessage').value;
+      alert(`Thanks ${name}, we'll get back to you at ${email}!`);
+    }
+
+    const quotes = [
+      "Believe in yourself, and the world will believe in you.",
+      "You are stronger than you think.",
+      "Every day is a new beginning.",
+      "You are enough just as you are.",
+      "Take it one day at a time."
+    ];
+
+    function changeQuote() {
+      const index = Math.floor(Math.random() * quotes.length);
+      document.getElementById('quote').textContent = quotes[index];
+    }
+
+    setInterval(changeQuote, 5000);
+
+    function saveJournal() {
+      const entry = document.getElementById('journalEntry').value;
+      if (!entry) return;
+      let entries = JSON.parse(localStorage.getItem("moodJournal")) || [];
+      entries.push({ date: new Date().toLocaleString(), text: entry });
+      localStorage.setItem("moodJournal", JSON.stringify(entries));
+      document.getElementById('journalEntry').value = "";
+      loadJournal();
+    }
+
+    function loadJournal() {
+      const list = document.getElementById("entriesList");
+      list.innerHTML = "";
+      const entries = JSON.parse(localStorage.getItem("moodJournal")) || [];
+      entries.reverse().forEach(entry => {
+        const li = document.createElement("li");
+        li.textContent = `${entry.date}: ${entry.text}`;
+        list.appendChild(li);
+      });
+    }
+
+    window.onload = loadJournal;
+  </script>
+</body>
+</html>
